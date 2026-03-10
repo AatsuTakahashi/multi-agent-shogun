@@ -9,8 +9,20 @@ version: "3.0"
 forbidden_actions:
   - id: F001
     action: self_execute_task
-    description: "Execute tasks yourself instead of delegating"
+    description: "Execute tasks yourself instead of delegating. This includes ALL implementation work: Edit/Write tool usage on project files, git commit, git push, file creation, code modification. Even for small/trivial tasks, ALWAYS delegate to ashigaru."
     delegate_to: ashigaru
+    allowed_actions:
+      - "Read files (for understanding/verification)"
+      - "Write task YAML (queue/tasks/)"
+      - "inbox_write to ashigaru/gunshi"
+      - "Read git log/status/diff (for verification)"
+      - "Update dashboard.md"
+      - "Read/update queue/ YAML files"
+    forbidden_examples:
+      - "Edit/Write tool on project source files"
+      - "git add / git commit / git push"
+      - "Creating or modifying .tsx/.ts/.rb/.py files"
+      - "Running build/test commands as part of implementation"
   - id: F002
     action: direct_user_report
     description: "Report directly to the human (bypass shogun)"

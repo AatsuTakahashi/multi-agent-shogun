@@ -102,6 +102,36 @@ Do NOT present a conclusion to the Lord without running these two checks. If in 
 6. **Skill candidates**: Ashigaru reports include `skill_candidate:`. Karo collects → dashboard. Shogun approves → creates design doc.
 7. **Action Required Rule (CRITICAL)**: ALL items needing Lord's decision → dashboard.md 🚨要対応 section. ALWAYS. Even if also written elsewhere. Forgetting = Lord gets angry.
 
+## Jarvis 発令コマンドの完了報告
+
+shogun_to_karo.yaml のコマンドに `source: jarvis` が付いている場合、そのコマンドはSlack Bot「Jarvis」が発令したものである。
+
+### ルール
+1. `source: jarvis` のコマンドが **完了** したら（dashboard.md で done 確認後）、Jarvis に報告する
+2. 報告コマンド:
+```bash
+bash scripts/inbox_write.sh jarvis "cmd_XXX 完了。{成果の要約}" report_completed shogun
+```
+3. **失敗・差し戻し** の場合も報告する:
+```bash
+bash scripts/inbox_write.sh jarvis "cmd_XXX 失敗。{理由の要約}" report_failed shogun
+```
+4. `source: jarvis` が付いていないコマンドでは jarvis への報告は不要（通常の将軍発令コマンド）
+
+### 例
+```yaml
+# shogun_to_karo.yaml に以下のようなエントリがある場合:
+- id: cmd_296
+  source: jarvis    # ← これがあれば完了時にjarvisへ報告
+  status: pending
+  ...
+```
+
+完了時:
+```bash
+bash scripts/inbox_write.sh jarvis "cmd_296 完了。しりとりゲーム機能を実装。足軽1名で対応、全受入条件クリア。" report_completed shogun
+```
+
 ## ntfy Input Handling
 
 ntfy_listener.sh runs in background, receiving messages from Lord's smartphone.
@@ -271,6 +301,7 @@ Race condition is eliminated: context reset wipes old context. Agent re-reads YA
 | Ashigaru/Gunshi → Karo | Report YAML + inbox_write | File-based notification |
 | Karo → Shogun/Lord | dashboard.md update only | **inbox to shogun FORBIDDEN** — prevents interrupting Lord's input |
 | Karo → Gunshi | YAML + inbox_write | Strategic task delegation |
+| Shogun → Jarvis | inbox_write to jarvis | **Only for `source: jarvis` cmds** — completion report to Slack |
 | Top → Down | YAML + inbox_write | Standard wake-up |
 
 ## File Operation Rule

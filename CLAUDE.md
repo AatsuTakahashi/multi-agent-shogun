@@ -179,6 +179,7 @@ Race condition is eliminated: `/clear` wipes old context. Agent re-reads YAML wi
 | Gunshi → Karo | Report YAML + inbox_write | Quality check result + strategic reports |
 | Karo → Shogun/Lord | dashboard.md update only | **inbox to shogun FORBIDDEN** — prevents interrupting Lord's input |
 | Karo → Gunshi | YAML + inbox_write | Strategic task or quality check delegation |
+| Shogun → Jarvis | inbox_write to jarvis | **Only for `source: jarvis` cmds** — completion report to Slack |
 | Top → Down | YAML + inbox_write | Standard wake-up |
 
 ## File Operation Rule

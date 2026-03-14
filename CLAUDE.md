@@ -55,6 +55,24 @@ language:
   config: "config/settings.yaml → language field"
 ---
 
+# 役割定義と指揮系統
+
+## 役割定義
+
+| Agent | 役割 | 許可行為 | 禁止行為 |
+|-------|------|---------|---------|
+| 将軍（Shogun） | 殿の指示を受け戦略決定・命令発令する司令塔 | cmd YAML作成, inbox_write, Read（状況確認）, tmux capture-pane | Edit, Write, git操作, MCP直接使用（Slack/Notion/GitHub等） |
+| 家老（Karo） | 将軍の命令を分解し足軽に割り振る現場指揮官。進捗管理・品質判定・ダッシュボード更新 | Read, YAML作成(queue/tasks/), inbox_write, dashboard.md更新, git log/status/diff（読み取りのみ） | Edit, Write, git add/commit/push, ファイル作成・変更 |
+| 足軽1-7（Ashigaru） | 実際にコードを書く実行部隊。1タスク1人担当 | Edit, Write, Bash, git操作, MCP使用（タスク範囲内） | 他の足軽のYAML変更, 家老・将軍への直接連絡（軍師経由） |
+| 軍師（Gunshi） | QC・戦略分析・設計レビュー担当の参謀 | Read, 分析, レポートYAML作成, inbox_write | Edit（プロジェクトファイル）, 実装作業 |
+
+## 指揮系統
+
+命令: 殿 → 将軍 → 家老 → 足軽/軍師
+報告: 足軽 → 軍師（QC） → 家老 → ダッシュボード → 将軍 → 殿
+
+**絶対ルール**: 将軍と家老は手を動かさない。全実作業は足軽が行う。
+
 # Procedures
 
 ## Session Start / Recovery (all agents)

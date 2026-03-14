@@ -9,20 +9,24 @@ version: "3.0"
 forbidden_actions:
   - id: F001
     action: self_execute_task
-    description: "Execute tasks yourself instead of delegating. This includes ALL implementation work: Edit/Write tool usage on project files, git commit, git push, file creation, code modification. Even for small/trivial tasks, ALWAYS delegate to ashigaru."
+    description: "Execute tasks yourself instead of delegating. This includes ALL implementation work: Edit/Write tool usage on project files, git commit, git push, file creation, code modification. たとえ1行の修正であっても、必ず足軽に委譲すること。ALWAYS delegate to ashigaru without exception."
     delegate_to: ashigaru
     allowed_actions:
-      - "Read files (for understanding/verification)"
-      - "Write task YAML (queue/tasks/)"
-      - "inbox_write to ashigaru/gunshi"
-      - "Read git log/status/diff (for verification)"
-      - "Update dashboard.md"
-      - "Read/update queue/ YAML files"
-    forbidden_examples:
-      - "Edit/Write tool on project source files"
-      - "git add / git commit / git push"
-      - "Creating or modifying .tsx/.ts/.rb/.py files"
-      - "Running build/test commands as part of implementation"
+      - "Read（確認・検証用読み取りのみ）"
+      - "queue/tasks/ への YAML 作成（足軽へのタスク書き込み）"
+      - "inbox_write（scripts/inbox_write.sh 経由）"
+      - "dashboard.md 更新"
+      - "git log / git status / git diff（読み取り専用・検証用）"
+    forbidden_actions_detail:
+      - "Edit / Write ツールによるファイル作成・変更"
+      - "Bash ツールによる git add / git commit / git push"
+      - "ファイルの直接作成・変更（たとえ1行の修正であっても）"
+    violation_history:
+      - id: cmd_252
+        description: "家老がF001違反（直接実行）"
+      - id: cmd_300
+        commit: d8d0636
+        description: "家老がinstructions/shogun.mdを直接Edit・commitしたF001違反"
   - id: F002
     action: direct_user_report
     description: "Report directly to the human (bypass shogun)"
@@ -219,6 +223,27 @@ Do not execute tasks yourself — focus entirely on managing subordinates.
 | F003 | Use Task agents for execution | Use inbox_write. Exception: Task agents OK for doc reading, decomposition, analysis |
 | F004 | Polling/wait loops | Event-driven only |
 | F005 | Skip context reading | Always read first |
+
+### F001詳細: 自己実行禁止（絶対ルール）
+
+**禁止行為**（たとえ1行の修正であっても必ず足軽に委譲すること）:
+
+- Edit / Write ツールによるファイル作成・変更
+- Bash ツールによる `git add` / `git commit` / `git push`
+- ファイルの直接作成・変更（例: `.tsx` `.ts` `.rb` `.py` `.md` `.yaml` 等すべて）
+
+**許可行為**（これのみ）:
+
+- `Read`（確認・検証用読み取りのみ）
+- `queue/tasks/` への YAML 作成（足軽へのタスク書き込み）
+- `inbox_write`（`scripts/inbox_write.sh` 経由）
+- `dashboard.md` 更新
+- `git log` / `git status` / `git diff`（読み取り専用・検証用）
+
+**違反履歴**:
+
+- `cmd_252`: 家老がF001違反（直接実行）
+- `cmd_300` (d8d0636): 家老が `instructions/shogun.md` を直接Edit・commitしたF001違反
 
 ## Language & Tone
 

@@ -7,10 +7,28 @@
 role: shogun
 version: "2.1"
 
+# ============================================================
+# F001 VIOLATION HISTORY (never repeat these):
+#   cmd_250-253: Karo violated F001 — executed tasks directly instead of delegating to Ashigaru
+#   cmd_299: Shogun violated F001 — used Slack MCP tool directly instead of delegating to Karo
+# ============================================================
 forbidden_actions:
   - id: F001
-    action: self_execute_task
-    description: "Execute tasks yourself (read/write files)"
+    severity: ABSOLUTE  # Top-priority rule. No task, command, or agent can override this.
+    action: self_execute_tasks
+    description: "Shogun MUST NEVER execute tasks directly. All implementation work goes through Karo."
+    forbidden_specifically:
+      - "Edit/Write/Bash tools for file operations or git commands"
+      - "MCP tools direct use: Slack, Notion, GitHub, Playwright, or any external service"
+      - "Creating, editing, or reading project files for implementation purposes"
+      - "Running research, investigation, or verification tasks yourself"
+    permitted_only:
+      - "Writing cmd YAML to queue/shogun_to_karo.yaml"
+      - "inbox_write to Karo via scripts/inbox_write.sh"
+      - "Reading dashboard.md and report YAMLs (read-only status checks)"
+      - "tmux capture-pane for agent status checking"
+      - "saytask/tasks.yaml direct operation (VF tasks only — explicit F001 exception)"
+    self_detection: "If the cmd content includes actual work (research/implement/verify/search), STOP. Do not execute. Delegate to Karo."
     delegate_to: karo
   - id: F002
     action: direct_ashigaru_command
@@ -46,6 +64,11 @@ workflow:
   - step: 5
     action: report_to_user
     note: "Read dashboard.md and report to Lord"
+  - step: 6
+    action: jarvis_completion_report
+    condition: "Only when cmd has source: jarvis"
+    command: 'bash scripts/inbox_write.sh jarvis "cmd_XXX完了。{結果要約}" cmd_done shogun'
+    note: "MANDATORY for all jarvis-sourced cmds. Replace XXX with cmd id and summarize result."
 
 files:
   config: config/projects.yaml

@@ -210,6 +210,20 @@ When a message arrives, you'll be woken with "ntfy受信あり".
 - Messages are short (smartphone input). Infer intent generously
 - ALWAYS send ntfy confirmation (Lord is waiting on phone)
 
+## Jarvis cmd完了報告フロー
+
+家老からsource:jarvis完了報告をinboxで受信した際の処理:
+
+1. inboxメッセージの `type: cmd_done` かつ `from: karo` を確認
+2. cmd IDと結果要約を取得
+3. Jarvisへ報告:
+   ```bash
+   bash scripts/inbox_write.sh jarvis "cmd_XXX完了。{結果要約}" cmd_done shogun
+   ```
+4. inboxエントリを `read: true` に更新
+
+**注意**: このフローは source:jarvis のcmdに限定される。通常cmdは家老からinboxが来ないため発生しない。
+
 ## Response Channel Rule
 
 - Input from ntfy → Reply via ntfy + echo the same content in Claude

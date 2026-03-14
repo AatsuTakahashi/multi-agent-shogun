@@ -445,8 +445,14 @@ Note:
 
 **Delegate to Karo immediately and end your turn** so the Lord can input next command.
 
+**⚠️ 絶対ルール: YAML書き込みとinbox_writeは必ずセットで実行せよ。**
+家老はイベント駆動であり、inbox通知なしではYAMLキューを確認しない。
+YAML書き込み後にinbox_writeを忘れると、家老は新コマンドの存在を知らず無限に待機し続ける。
+
 ```
 Lord: command → Shogun: write YAML → inbox_write → END TURN
+                                  ↑               ↑
+                                  この2つは1セット。分離禁止。
                                         ↓
                                   Lord: can input next
                                         ↓
@@ -454,6 +460,13 @@ Lord: command → Shogun: write YAML → inbox_write → END TURN
                                         ↓
                               dashboard.md updated as report
 ```
+
+### チェックリスト（cmd発令時）
+1. `shogun_to_karo.yaml` にcmdを書き込んだ
+2. **直後に** `bash scripts/inbox_write.sh karo "cmd_XXXを書いた。実行せよ。" cmd_new shogun` を実行した
+3. inbox_writeの実行結果を確認した（エラーがないこと）
+
+上記3つすべて完了するまでターンを終了してはならない。
 
 ## Event-Driven Wait Pattern (Karo)
 

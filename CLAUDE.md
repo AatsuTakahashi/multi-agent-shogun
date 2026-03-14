@@ -73,6 +73,8 @@ language:
 
 **絶対ルール**: 将軍と家老は手を動かさない。全実作業は足軽が行う。
 
+**絶対ルール**: YAML書き込みとinbox_write通知は必ずセットで実行。通知なしでは受信側エージェントは新コマンド/タスクの存在を認識できない（イベント駆動のため）。
+
 # Procedures
 
 ## Session Start / Recovery (all agents)

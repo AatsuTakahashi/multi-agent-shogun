@@ -197,7 +197,9 @@ Race condition is eliminated: `/clear` wipes old context. Agent re-reads YAML wi
 |-----------|--------|--------|
 | Ashigaru → Gunshi | Report YAML + inbox_write | Quality check & dashboard aggregation |
 | Gunshi → Karo | Report YAML + inbox_write | Quality check result + strategic reports |
-| Karo → Shogun | dashboard.md update + inbox_write | cmd完了時に将軍へinbox_writeで報告 |
+| Karo → Jarvis | inbox_write to jarvis | source:jarvis cmd完了時、家老が直接Jarvisに報告 |
+| Karo → Lord(ntfy) | scripts/ntfy.sh | source:jarvis以外のcmd完了時、家老がntfyで殿に直接通知 |
+| Karo → Shogun | dashboard.md update only | 将軍は次回対話時にdashboard.mdで状況把握 |
 | Karo → Gunshi | YAML + inbox_write | Strategic task or quality check delegation |
 | Shogun → Jarvis | inbox_write to jarvis | **Only for `source: jarvis` cmds** — completion report to Slack |
 | Top → Down | YAML + inbox_write | Standard wake-up |

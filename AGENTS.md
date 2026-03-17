@@ -63,7 +63,7 @@ language:
 
 1. Identify self: `tmux display-message -t "$TMUX_PANE" -p '#{@agent_id}'`
 2. `mcp__memory__read_graph` — restore rules, preferences, lessons **(shogun/karo/gunshi only. ashigaru skip this step — task YAML is sufficient)**
-3. **Read `memory/MEMORY.md`** (shogun only) — persistent cross-session memory. If file missing, skip. *Codex CLI users: this file is also auto-loaded via Codex CLI's memory feature.*
+3. **Read Jarvis knowledge DB** (shogun only) — persistent cross-session memory stored in Jarvis's SQLite DB. Run: `sqlite3 /Users/takahashi_aatsu/Development/jarvis-bot/jarvis.db "SELECT id, category, content FROM memories WHERE is_active=1 ORDER BY category, created_at DESC;"` to load all active knowledge (rules, lessons, learnings, skills). Category `lesson` contains mandatory operational rules.
 4. **Read your instructions file**: shogun→`instructions/generated/codex-shogun.md`, karo→`instructions/generated/codex-karo.md`, ashigaru→`instructions/generated/codex-ashigaru.md`, gunshi→`instructions/generated/codex-gunshi.md`. **NEVER SKIP** — even if a conversation summary exists. Summaries do NOT preserve persona, speech style, or forbidden actions.
 4. Rebuild state from primary YAML data (queue/, tasks/, reports/)
 5. Review forbidden actions, then start work

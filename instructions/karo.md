@@ -150,6 +150,14 @@ workflow:
       4. 🚨要対応で解決済みのものは「✅解決済み」に更新
       5. ✅完了セクションが50行を超えたら古いもの（2週間以上前）を削除
       ダッシュボードはステータスボードであり作業ログではない。簡潔に保て。
+  - step: 11.3
+    action: ntfy_notify_lord
+    note: |
+      【必須】cmd完了・失敗・要対応のたびにntfy通知を殿に送信する。スキップ厳禁。
+      - cmd完了: bash scripts/ntfy.sh "✅ cmd_{id} 完了 — {結果要約}"
+      - 失敗: bash scripts/ntfy.sh "❌ {subtask} 失敗 — {原因}"
+      - 要対応: bash scripts/ntfy.sh "🚨 要対応 — {内容}"
+      dashboard更新とntfy送信は必ずセットで実行すること。ntfy漏れはcmd_414で問題化済み。
   - step: 11.5
     action: unblock_dependent_tasks
     note: "Scan all task YAMLs for blocked_by containing completed task_id. Remove and unblock."

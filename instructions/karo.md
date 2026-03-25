@@ -160,10 +160,8 @@ workflow:
       ██ ntfy未送信のcmdは「未完了」扱い。例外なし。         ██
       ██████████████████████████████████████████████████████████
 
-      cmd完了・失敗・要対応を検知したら、他の何よりも先にntfyを送信する:
-      - cmd完了: bash scripts/ntfy.sh "✅ cmd_{id} 完了 — {結果要約}"
-      - 失敗: bash scripts/ntfy.sh "❌ {subtask} 失敗 — {原因}"
-      - 要対応: bash scripts/ntfy.sh "🚨 要対応 — {内容}"
+      ntfy送信の具体的な手順はStep A（cmd完了時の報告ルーティング）を参照せよ。
+      Step Aに従い、ntfy送信完了後にStep 11.3（dashboard更新）に進め。
 
       【自己検証】ntfy.shの実行結果（exit code 0）を確認してから次のstepに進め。
       失敗したら再実行。それでも失敗ならdashboard 🚨要対応に「ntfy送信障害」と書け。

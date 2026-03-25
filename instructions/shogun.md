@@ -198,18 +198,17 @@ When a message arrives, you'll be woken with "ntfy受信あり".
 ### Processing Steps
 
 1. Read `queue/ntfy_inbox.yaml` — find `status: pending` entries
-2. Process each message:
-   - **Task command** ("〇〇作って", "〇〇調べて") → Write cmd to shogun_to_karo.yaml → Delegate to Karo
+2. Process each message (reply via ntfy as needed):
+   - **Task command** ("〇〇作って", "〇〇調べて") → Write cmd to shogun_to_karo.yaml → Delegate to Karo → Reply via ntfy
    - **Status check** ("状況は", "ダッシュボード") → Read dashboard.md → Reply via ntfy
-   - **VF task** ("〇〇する", "〇〇予約") → Register in saytask/tasks.yaml (future)
+   - **VF task** ("〇〇する", "〇〇予約") → Register in saytask/tasks.yaml (future) → Reply via ntfy
    - **Simple query** → Reply directly via ntfy
 3. Update inbox entry: `status: pending` → `status: processed`
-4. Send confirmation: `bash scripts/ntfy.sh "📱 受信: {summary}"`
 
 ### Important
 - ntfy messages = Lord's commands. Treat with same authority as terminal input
 - Messages are short (smartphone input). Infer intent generously
-- ALWAYS send ntfy confirmation (Lord is waiting on phone)
+- Reply via ntfy with the **processing result only** (no separate ACK notification)
 
 ## Response Channel Rule
 

@@ -15,9 +15,9 @@
 # Fallback 2: rc=1処理（Claude Code atomic write = tmp+rename でinode変更時）
 #
 # エスカレーション（未読メッセージが放置されている場合）:
-#   0〜2分: 通常nudge（send-keys）。ただしWorking中はスキップ
-#   2〜4分: Escape×2 + nudge（カーソル位置バグ対策）
-#   4分〜 : /clear送信（5分に1回まで。強制リセット+YAML再読）
+#   0〜1分: 通常nudge（send-keys）。ただしWorking中はスキップ
+#   1〜2分: Escape×2 + nudge（カーソル位置バグ対策）
+#   2分〜 : /clear送信（3分に1回まで。強制リセット+YAML再読）
 # ═══════════════════════════════════════════════════════════════
 
 # ─── Testing guard ───
@@ -116,9 +116,9 @@ fi
 # Time-based escalation: track how long unread messages have been waiting
 FIRST_UNREAD_SEEN=${FIRST_UNREAD_SEEN:-0}
 LAST_CLEAR_TS=${LAST_CLEAR_TS:-0}
-ESCALATE_PHASE1=${ESCALATE_PHASE1:-120}
-ESCALATE_PHASE2=${ESCALATE_PHASE2:-240}
-ESCALATE_COOLDOWN=${ESCALATE_COOLDOWN:-300}
+ESCALATE_PHASE1=${ESCALATE_PHASE1:-60}
+ESCALATE_PHASE2=${ESCALATE_PHASE2:-120}
+ESCALATE_COOLDOWN=${ESCALATE_COOLDOWN:-180}
 
 # ─── Nudge throttle ───
 # Avoid spamming the same "inboxN" into the pane every timeout tick.
@@ -1061,7 +1061,7 @@ for s in data.get('specials', []):
         local age=$((now - FIRST_UNREAD_SEEN))
 
         if [ "$age" -lt "$ESCALATE_PHASE1" ]; then
-            # Phase 1 (0-2 min): Standard nudge
+            # Phase 1 (0-1 min): Standard nudge
             echo "[$(date)] $normal_count unread for $AGENT_ID (${age}s)" >&2
             if disable_normal_nudge; then
                 echo "[$(date)] [SKIP] disable_normal_nudge=1, deferring to escalation-only path" >&2
@@ -1069,11 +1069,11 @@ for s in data.get('specials', []):
                 send_wakeup "$normal_count"
             fi
         elif [ "$age" -lt "$ESCALATE_PHASE2" ]; then
-            # Phase 2 (2-4 min): Escape + nudge
+            # Phase 2 (1-2 min): Escape + nudge
             echo "[$(date)] $normal_count unread for $AGENT_ID (${age}s — escalating: Escape+nudge)" >&2
             send_wakeup_with_escape "$normal_count"
         else
-            # Phase 3 (4+ min): /clear (throttled to once per 5 min)
+            # Phase 3 (2+ min): /clear (throttled to once per 3 min)
             if [ "$LAST_CLEAR_TS" -lt "$((now - ESCALATE_COOLDOWN))" ]; then
                 local effective_cli
                 effective_cli=$(get_effective_cli_type)

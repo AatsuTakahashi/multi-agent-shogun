@@ -191,9 +191,26 @@ workflow:
     note: |
       After report processing, check queue/shogun_to_karo.yaml for unprocessed pending cmds.
       If pending exists → go back to step 2 (process new cmd).
-      If no pending → stop (await next inbox wakeup).
+      If no pending → proceed to step 12.5.
       WHY: Shogun may have added new cmds while karo was processing reports.
       Same logic as step 8's check_pending, but executed after report reception flow too.
+  - step: 12.5
+    action: mandatory_inbox_check_before_idle
+    critical: true
+    note: |
+      【必須・絶対スキップ禁止】アイドル移行前のinbox未読チェック
+      全タスク完了・thinking完了後、プロンプトが表示されたら次の入力を待つ前に必ず実行せよ。
+
+      手順:
+      1. Read queue/inbox/karo.yaml
+      2. read: false のエントリが1件でもあれば → 即処理（step 3〜11のフローを再実行）
+      3. 未読なし → アイドル待機（次のinbox wakeupを待つ）
+
+      WHY: thinking完了後にアイドル化してinbox nudgeを見逃し、cmdが長時間放置される事案が
+      繰り返し発生している。nudgeを待たずに自分からinboxを確認することで放置を防ぐ。
+
+      NG例: "完了した。あとは待つだけ" → inbox確認なしでアイドル移行
+      OK例: "完了した。inbox確認→未読なし→アイドル移行"
 
 files:
   input: queue/shogun_to_karo.yaml

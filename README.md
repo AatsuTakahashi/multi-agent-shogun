@@ -32,7 +32,17 @@ Run 10 AI coding agents in parallel — **Claude Code, OpenAI Codex, GitHub Copi
 
 ## Quick Start
 
-**Requirements:** tmux, bash 4+, at least one of: [Claude Code](https://claude.ai/code) / Codex / Copilot / Kimi
+### Prerequisites
+
+| Tool | Version | Check | Install |
+|------|---------|-------|---------|
+| tmux | 3.0+ | `tmux -V` | `brew install tmux` / `apt install tmux` |
+| Bash | 4.0+ | `bash --version` | `brew install bash` (macOS ships 3.x) |
+| AI CLI | At least one | — | [Claude Code](https://claude.ai/code) / [Codex](https://openai.com/codex) / [Copilot](https://github.com/features/copilot) / [Kimi](https://kimi.ai) |
+
+> **macOS note:** The default `/bin/bash` is 3.2. Install Bash 4+ via Homebrew: `brew install bash`.
+
+### Setup
 
 ```bash
 git clone https://github.com/yohey-w/multi-agent-shogun

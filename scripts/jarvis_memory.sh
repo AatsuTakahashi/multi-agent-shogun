@@ -27,7 +27,7 @@ if [[ ! -f "$TOKEN_FILE" ]]; then
 fi
 API_TOKEN=$(cat "$TOKEN_FILE")
 
-JARVIS_API="http://localhost:8000"
+JARVIS_API="https://localhost:8000"
 CATEGORY="${1:?Usage: jarvis_memory.sh <category> <content> [importance] [source]}"
 CONTENT="${2:?Usage: jarvis_memory.sh <category> <content> [importance] [source]}"
 IMPORTANCE="${3:-5}"

@@ -1,9 +1,9 @@
 #!/bin/bash
-# jarvis_memory_backup.sh — Backup JARVIS memories to external GitHub private repo (personal Mac only)
+# jarvis_memory_backup.sh — Backup JARVIS memories to local directory (personal Mac only)
 # Usage: bash scripts/jarvis_memory_backup.sh
 #
 # Environment variables:
-#   JARVIS_BACKUP_REPO: Path to local clone of backup repo (default: $HOME/Development/jarvis-memory-backup)
+#   JARVIS_BACKUP_REPO: Path to local backup directory (default: $HOME/Development/jarvis/backups)
 
 set -euo pipefail
 
@@ -24,16 +24,12 @@ if [[ ! -f "$TOKEN_FILE" ]]; then
 fi
 TOKEN=$(cat "$TOKEN_FILE")
 
-# Guard 3: backup repo must exist
-JARVIS_BACKUP_REPO="${JARVIS_BACKUP_REPO:-$HOME/Development/jarvis-memory-backup}"
-if [[ ! -d "$JARVIS_BACKUP_REPO" ]]; then
-    echo "ERROR: Backup repo not found at $JARVIS_BACKUP_REPO" >&2
-    bash "$SCRIPT_DIR/ntfy.sh" "【JARVIS記憶バックアップ失敗】$(date +%Y-%m-%d): バックアップリポジトリが見つかりません: $JARVIS_BACKUP_REPO" 2>/dev/null || true
-    exit 1
-fi
+# Setup backup directory
+BACKUP_DIR="${JARVIS_BACKUP_REPO:-$HOME/Development/jarvis/backups}"
+mkdir -p "$BACKUP_DIR"
 
 DATE=$(date +%Y-%m-%d)
-OUTPUT_FILE="$JARVIS_BACKUP_REPO/memories_${DATE}.json"
+OUTPUT_FILE="$BACKUP_DIR/memories_${DATE}.json"
 
 # Fetch memories from JARVIS API
 RESPONSE=$(curl -sk --max-time 10 -w "\n%{http_code}" \
@@ -62,16 +58,7 @@ fi
 
 echo "Saved to $OUTPUT_FILE"
 
-# Git operations
-cd "$JARVIS_BACKUP_REPO"
-git add "memories_${DATE}.json"
-
-if git diff --cached --quiet; then
-    echo "変更なし: 同日のバックアップが既に最新です"
-    exit 0
-fi
-
-git commit -m "📦 backup: memories snapshot ${DATE}"
-git push origin main
+# 7-day rotation: delete backups older than 7 days
+find "$BACKUP_DIR" -name 'memories_*.json' -mtime +7 -delete 2>/dev/null || true
 
 echo "バックアップ完了: ${DATE}"

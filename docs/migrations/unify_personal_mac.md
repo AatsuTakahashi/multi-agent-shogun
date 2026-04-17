@@ -88,20 +88,43 @@ fi
 
 ---
 
+## ⚠️ 追加発見事項
+
+### scripts/jarvis_memory_read.sh が存在しない
+
+- `git log` には `66bf011 ✨ feat(memory): Supabase記憶読み込みスクリプト新設...` で追加されているが、
+  現在のワーキングツリーに存在しない
+- 原因: `.gitignore` のホワイトリスト制御でトラックされていない可能性
+- **影響**: CLAUDE.md Step 3 および shogun.md Pre-CMD Rule Injection で参照しているが実行不可能
+- **対応**: 家老・軍師の判断が必要。スクリプト復元または代替手順への変更を検討
+
+---
+
 ## コミット計画
 
 | コミット | 内容 | ステータス |
 |---------|------|---------|
 | Commit 1 (chore/investigate) | 本ドキュメント作成 | ✅ 完了 |
-| Commit 2 (refactor/scripts) | jarvis_memory.sh Guard 1削除（軍師判断後）| ⏳ 保留 |
-| Commit 3 (docs) | CLAUDE.md・MEMORY.md更新 | ⏳ 次フェーズ |
-| Commit 4 (test) | syntax check・動作確認 | ⏳ 次フェーズ |
+| Commit 2 (refactor/scripts) | jarvis_memory.sh Guard 1削除（軍師判断後）| ⏳ 保留（要軍師判断） |
+| Commit 3 (docs) | CLAUDE.md・instructions/shogun.md更新 | ✅ 完了 |
+| Commit 4 (test) | syntax check・動作確認 | ✅ 完了（下記参照） |
 
 ---
 
-## 動作確認結果（Commit 4 用 — 後で追記）
+## 動作確認結果
 
 ```
-# 実行日時: 
-# bash -n syntax check結果:
+実行日時: 2026-04-17
+
+# bash -n syntax check 結果:
+scripts/jarvis_memory.sh: OK
+scripts/inbox_write.sh: OK
+scripts/inbox_watcher.sh: OK
+scripts/ntfy.sh: OK
+scripts/agent_status.sh: OK
+scripts/watcher_supervisor.sh: OK
+scripts/switch_cli.sh: OK
+scripts/stop_hook_inbox.sh: OK
+
+# ⚠️ 注意: scripts/jarvis_memory_read.sh は現在ワーキングツリーに不在（上記追加発見事項参照）
 ```

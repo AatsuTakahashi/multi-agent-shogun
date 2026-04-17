@@ -300,6 +300,10 @@ if [ -f "$VENV_DIR/bin/python3" ] && "$VENV_DIR/bin/python3" -c "import yaml" 2>
 else
     log_info "Python venv をセットアップ中..."
     if command -v python3 &> /dev/null; then
+        if command -v apt-get &> /dev/null; then
+            sudo apt-get update -qq 2>/dev/null
+            sudo apt-get install -y python3-venv 2>/dev/null
+        fi
         if python3 -m venv "$VENV_DIR" 2>/dev/null; then
             log_success "venv 作成完了: $VENV_DIR"
             if [ -f "$SCRIPT_DIR/requirements.txt" ]; then
@@ -567,6 +571,45 @@ if [ $EXISTED_COUNT -gt 0 ]; then
 fi
 
 RESULTS+=("ディレクトリ構造: OK (作成:$CREATED_COUNT, 既存:$EXISTED_COUNT)")
+
+# ============================================================
+# STEP 6.5: OSSスキルインストール
+# ============================================================
+log_step "STEP 6.5: OSSスキルインストール"
+
+CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
+mkdir -p "$CLAUDE_SKILLS_DIR"
+
+INSTALLED_SKILLS=0
+SKIPPED_SKILLS=0
+FOUND_SKILLS=0
+
+shopt -s nullglob
+for skill_dir in "$SCRIPT_DIR/skills"/*/; do
+    [ -d "$skill_dir" ] || continue
+
+    FOUND_SKILLS=$((FOUND_SKILLS + 1))
+    skill_name=$(basename "$skill_dir")
+    target="$CLAUDE_SKILLS_DIR/$skill_name"
+
+    if [ -d "$target" ]; then
+        log_info "スキル $skill_name は既に存在します（スキップ）"
+        SKIPPED_SKILLS=$((SKIPPED_SKILLS + 1))
+    else
+        cp -r "$skill_dir" "$target"
+        log_success "スキルをインストールしました: $skill_name"
+        INSTALLED_SKILLS=$((INSTALLED_SKILLS + 1))
+    fi
+done
+shopt -u nullglob
+
+if [ "$FOUND_SKILLS" -eq 0 ]; then
+    log_warn "インストール可能なスキルが見つかりませんでした"
+    RESULTS+=("OSSスキル: スキップ (skills/ 未検出)")
+else
+    log_info "/shogun-model-switch などのスキルが使用可能になりました"
+    RESULTS+=("OSSスキル: OK (新規:$INSTALLED_SKILLS, 既存:$SKIPPED_SKILLS)")
+fi
 
 # ============================================================
 # STEP 7: 設定ファイル初期化

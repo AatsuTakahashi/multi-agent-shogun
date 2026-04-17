@@ -389,10 +389,10 @@ Don't save: temporary task details (use YAML), file contents (just read them), i
 
 ## Pre-CMD Rule Injection (MANDATORY)
 
-cmd発令前に、jarvis.dbからcmd内容に関連するルールを動的に取得し、指示文に反映する。
+cmd発令前に、JARVIS Supabaseからcmd内容に関連するルールを動的に取得し、指示文に反映する。
 
 ### Workflow
 1. 殿の指示内容からキーワードを抽出（PR, ブランチ, レビュー, Dependabot, コミット等）
-2. `sqlite3 /path/to/jarvis.db "SELECT content FROM memories WHERE is_active=1 AND category='lesson' AND content LIKE '%キーワード%';"` で関連ルールを検索
+2. `bash scripts/jarvis_memory_read.sh 8` で全記憶を取得し、関連するlessonカテゴリのルールを抽出
 3. 該当するルールをcmdのcommandフィールドに「=== 適用ルール ===」セクションとして挿入
 4. ルールの禁止事項は禁止形で明記する（「〜せよ」ではなく「〜してはならない」）

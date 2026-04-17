@@ -510,6 +510,7 @@ log_war "👑 将軍の本陣を構築中..."
 if ! tmux has-session -t shogun 2>/dev/null; then
     tmux new-session -d -s shogun -n main
 fi
+tmux set-option -t shogun -g remain-on-exit on
 
 # スマホ等の小画面クライアント対策: aggressive-resize + latest
 # css関数がスマホ用に専用ウィンドウを作るので、PCのウィンドウに干渉しない
@@ -549,6 +550,7 @@ if ! tmux new-session -d -s multiagent -n "agents" 2>/dev/null; then
     echo ""
     exit 1
 fi
+tmux set-option -t multiagent -g remain-on-exit on
 
 # DISPLAY_MODE: shout (default) or silent (--silent flag)
 if [ "$SILENT_MODE" = true ]; then

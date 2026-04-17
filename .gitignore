@@ -116,6 +116,8 @@
 # Docs
 !docs/
 !docs/philosophy.md
+!docs/migrations/
+!docs/migrations/*.md
 
 # Screenshots (masked — no secrets)
 !images/

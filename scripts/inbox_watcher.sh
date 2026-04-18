@@ -18,6 +18,12 @@
 #   0〜1分: 通常nudge（send-keys）。ただしWorking中はスキップ
 #   1〜2分: Escape×2 + nudge（カーソル位置バグ対策）
 #   2分〜 : /clear送信（3分に1回まで。強制リセット+YAML再読）
+#
+# Context limit強制/clear（check_ctx_limit）:
+#   「Context limit reached」検出時、busy判定を無視して即座に/clearを送信。
+#   5分以内の重複発火を抑制。ログ: [FORCE-CLEAR] ctx limit detected in <agent>
+#   手動テスト: tmux send-keys -t <pane> "Context limit reached" Enter
+#              → ログに [FORCE-CLEAR] が出力され、/clear が送信されることを確認
 # ═══════════════════════════════════════════════════════════════
 
 # ─── Testing guard ───
@@ -116,6 +122,10 @@ fi
 # Time-based escalation: track how long unread messages have been waiting
 FIRST_UNREAD_SEEN=${FIRST_UNREAD_SEEN:-0}
 LAST_CLEAR_TS=${LAST_CLEAR_TS:-0}
+
+# ─── Force-clear tracking (ctx limit detection) ───
+LAST_FORCE_CLEAR_TS=${LAST_FORCE_CLEAR_TS:-0}
+FORCE_CLEAR_COOLDOWN=${FORCE_CLEAR_COOLDOWN:-300}  # 5 minutes idempotency guard
 ESCALATE_PHASE1=${ESCALATE_PHASE1:-60}
 ESCALATE_PHASE2=${ESCALATE_PHASE2:-120}
 ESCALATE_COOLDOWN=${ESCALATE_COOLDOWN:-180}
@@ -1153,6 +1163,53 @@ process_unread_once() {
     process_unread "startup"
 }
 
+# ─── Context limit detection → force /clear ───
+# Captures pane content and checks for "Context limit reached".
+# If detected, bypasses busy guard and sends /clear immediately.
+# Idempotency: 5-minute cooldown (FORCE_CLEAR_COOLDOWN) prevents repeated fires.
+#
+# Manual test procedure:
+#   1. Start a karo watcher: bash scripts/inbox_watcher.sh karo multiagent:0.0 claude
+#   2. In another pane, simulate the message:
+#      tmux send-keys -t multiagent:0.0 "Context limit reached" Enter
+#   3. Confirm [FORCE-CLEAR] appears in watcher log within 30s
+#   4. Confirm /clear was sent to the target pane
+check_ctx_limit() {
+    # Only applicable to Claude CLI (ctx limit is a Claude Code concept)
+    local effective_cli
+    effective_cli=$(get_effective_cli_type)
+    if [[ "$effective_cli" != "claude" ]]; then
+        return 0
+    fi
+
+    # Cooldown: skip if forced clear was already sent within FORCE_CLEAR_COOLDOWN seconds
+    local now
+    now=$(date +%s)
+    if [ "$((now - LAST_FORCE_CLEAR_TS))" -lt "${FORCE_CLEAR_COOLDOWN:-300}" ]; then
+        return 0
+    fi
+
+    # Capture pane and check for ctx limit message
+    local pane_content
+    pane_content=$(timeout 3 tmux capture-pane -t "$PANE_TARGET" -p 2>/dev/null || echo "")
+
+    if ! echo "$pane_content" | grep -qF "Context limit reached"; then
+        return 0
+    fi
+
+    echo "[$(date)] [FORCE-CLEAR] ctx limit detected in $AGENT_ID — sending /clear (bypassing busy guard)" >&2
+    LAST_FORCE_CLEAR_TS=$now
+    LAST_CLEAR_TS=$now
+
+    # Send /clear directly, bypassing agent_is_busy guard
+    timeout 5 tmux send-keys -t "$PANE_TARGET" C-c 2>/dev/null || true
+    sleep 0.5
+    timeout 5 tmux send-keys -t "$PANE_TARGET" "/clear" 2>/dev/null || true
+    sleep 1.0
+    timeout 5 tmux send-keys -t "$PANE_TARGET" Enter 2>/dev/null || true
+    sleep 3
+}
+
 # ─── Startup & Main loop (skipped in testing mode) ───
 if [ "${__INBOX_WATCHER_TESTING__:-}" != "1" ]; then
 
@@ -1216,6 +1273,9 @@ while true; do
     else
         process_unread "event"
     fi
+
+    # Check for "Context limit reached" on every cycle — bypasses busy guard
+    check_ctx_limit
 done
 
 fi  # end testing guard

@@ -1024,6 +1024,17 @@ External PRs are reinforcements. Treat with respect.
 6. Read related files
 7. Report loading complete, then begin decomposition
 
+## Ctx Self-Management Rule（自律ctx管理）
+
+cmd完了時点で自身のctx使用率を確認し、以下の自主アクションを取れ:
+
+- 70〜85%: `/compact` を実施して記憶を圧縮する
+- 85%超: 進行中のcmdが無いことを確認してから `/clear` を実施してSession Startからやり直す
+  - 進行中cmdがある場合は `/compact` のみ実施し、家老inbox経由で将軍に状況報告する
+
+**理由**: 2026-04-18に家老がctx limitで入力ブロックし、殿が手動介入する事態が発生した。
+殿の時間を守るため、家老が自律的にctxを管理することが必須。
+
 ## Autonomous Judgment (Act Without Being Told)
 
 ### Post-Modification Regression

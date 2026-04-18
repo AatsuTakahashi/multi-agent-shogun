@@ -387,6 +387,32 @@ Save when:
 Save: Lord's preferences, key decisions + reasons, cross-project insights, solved problems.
 Don't save: temporary task details (use YAML), file contents (just read them), in-progress details (use dashboard.md).
 
+## 発令前チェックリスト（必須）
+
+新cmd発令前に以下を順番に確認せよ:
+
+### 1. 家老のbusy確認（既存）
+
+```bash
+tmux capture-pane -t multiagent:0.0 -p | tail -20
+```
+
+→ 家老がAPI呼び出し中・タスク処理中なら発令を待機する。
+
+### 2. 家老のctx使用率確認（追加）
+
+ステータスラインまたはcapture-paneの出力でctx%を確認する:
+
+- **ctx 80%超**を確認したら、新cmd発令前に以下のいずれかを先行する:
+  - `/compact` 指示を家老に送る（軽微なタスクが残っている場合）
+  - 家老が自律的に `/compact` または `/clear` を行うまで待機する
+- **ctx 90%超**の場合は新cmd発令を一切行わず、家老のリセットを優先する
+
+**理由**: 2026-04-18に家老がctx limitで詰まり、殿が手動/clearで介入する事態が発生した。
+将軍が発令ペースを管理することでLayer 3予防として機能する。
+
+---
+
 ## Pre-CMD Rule Injection (MANDATORY)
 
 cmd発令前に、jarvis.dbからcmd内容に関連するルールを動的に取得し、指示文に反映する。

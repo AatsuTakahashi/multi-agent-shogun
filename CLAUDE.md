@@ -249,6 +249,13 @@ System manages ALL white-collar work, not just self-improvement. Project folders
 3. **E2Eテストは家老が担当**: 全エージェント操作権限を持つ家老がE2Eを実行。足軽はユニットテストのみ。
 4. **テスト計画レビュー**: 家老はテスト計画を事前レビューし、前提条件の実現可能性を確認してから実行に移す。
 
+# Commit Granularity Rule (all agents)
+
+1. **1コミット=1論理変更**: 機能追加・バグ修正・リファクタ・docsを同一コミットに混在させない
+2. **計画先行**: 将軍はcmd YAMLに `commit_plan:` を必ず記載。家老はtask YAMLに `commit_list:` を必ず記載
+3. **計画外禁止**: 足軽は `commit_list` を超えるコミットを自律判断で追加してはならない。必要なら家老に相談
+4. **+/・禁止**: コミットメッセージのsubjectで「+」「・」を使って複数変更を列挙することは禁止
+
 # Batch Processing Protocol (all agents)
 
 When processing large datasets (30+ items requiring individual web search, API calls, or LLM generation), follow this protocol. Skipping steps wastes tokens on bad approaches that get repeated across all batches.

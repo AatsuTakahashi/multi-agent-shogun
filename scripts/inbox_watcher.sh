@@ -18,6 +18,12 @@
 #   0〜1分: 通常nudge（send-keys）。ただしWorking中はスキップ
 #   1〜2分: Escape×2 + nudge（カーソル位置バグ対策）
 #   2分〜 : /clear送信（3分に1回まで。強制リセット+YAML再読）
+#
+# Context limit強制/clear（check_ctx_limit）:
+#   「Context limit reached」検出時、busy判定を無視して即座に/clearを送信。
+#   5分以内の重複発火を抑制。ログ: [FORCE-CLEAR] ctx limit detected in <agent>
+#   手動テスト: tmux send-keys -t <pane> "Context limit reached" Enter
+#              → ログに [FORCE-CLEAR] が出力され、/clear が送信されることを確認
 # ═══════════════════════════════════════════════════════════════
 
 # ─── Testing guard ───

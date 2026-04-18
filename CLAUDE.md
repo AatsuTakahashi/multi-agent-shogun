@@ -85,7 +85,7 @@ language:
 
 1. Identify self: `tmux display-message -t "$TMUX_PANE" -p '#{@agent_id}'`
 2. `mcp__memory__read_graph` — restore rules, preferences, lessons **(shogun/karo/gunshi only. ashigaru skip this step — task YAML is sufficient)**
-3. **Read Jarvis knowledge DB** (shogun only) — persistent cross-session memory stored in Jarvis's SQLite DB. Run: `sqlite3 /Users/takahashi_aatsu/Development/jarvis-bot/jarvis.db "SELECT id, category, content FROM memories WHERE is_active=1 ORDER BY category, created_at DESC;"` to load all active knowledge (rules, lessons, learnings, skills). Category `lesson` contains mandatory operational rules.
+3. **Read Jarvis knowledge DB** (shogun only) — persistent cross-session memory stored in JARVIS Supabase. Run: `bash scripts/jarvis_memory_read.sh 8` to load all active knowledge (rules, lessons, learnings, skills). Category `lesson` contains mandatory operational rules.
 4. **Read your instructions file**: shogun→`instructions/shogun.md`, karo→`instructions/karo.md`, ashigaru→`instructions/ashigaru.md`, gunshi→`instructions/gunshi.md`. **NEVER SKIP** — even if a conversation summary exists. Summaries do NOT preserve persona, speech style, or forbidden actions.
 4. Rebuild state from primary YAML data (queue/, tasks/, reports/)
 5. Review forbidden actions, then start work
@@ -331,9 +331,9 @@ When processing large datasets (30+ items requiring individual web search, API c
 
 ## JARVIS Supabase Memory Write Rule
 
-**会社MacからJARVIS Supabaseへの記憶書き込みは完全禁止。将来含めて例外なし。**
+**将軍システムは個人Mac（AATSUs-MacBook-Air）でのみ稼働する。JARVIS Supabaseへの書き込みもこの端末からのみ許可。**
 
-- `scripts/jarvis_memory.sh` は個人Mac（AATSUs-MacBook-Air）でのみ実行可
-- 会社Mac（ホスト名が異なる端末）では絶対に実行しない。curl直打ち等のバイパスも禁止
-- JARVIS memories API（POST /api/memories）への直接リクエストも会社Macからは禁止
+- `scripts/jarvis_memory.sh` はこのシステムが稼働する個人Macでのみ実行可
+- 想定外の端末からの実行は絶対にしない。curl直打ち等のバイパスも禁止
+- JARVIS memories API（POST /api/memories）への直接リクエストも想定外端末からは禁止
 - この制約の緩和を提案すること自体が禁止

@@ -242,6 +242,13 @@ System manages ALL white-collar work, not just self-improvement. Project folders
 6. **Skill candidates**: Ashigaru reports include `skill_candidate:`. Karo collects → dashboard. Shogun approves → creates design doc.
 7. **Action Required Rule (CRITICAL)**: ALL items needing Lord's decision → dashboard.md 🚨要対応 section. ALWAYS. Even if also written elsewhere. Forgetting = Lord gets angry.
 
+## Shogun Ctx Self-Management
+将軍は以下のルールを遵守すること（詳細: instructions/shogun.md）:
+- ctx 80%: queue/shogun_state.yaml 更新 + 殿にntfy「compact可否確認」
+- ctx 85%: drafts書出し後 /compact 実行
+- ctx 90%: shogun_state + drafts書込後 /clear 実行
+- 長作業: queue/drafts/YYYYMMDD_{topic}.md に逐次書出し
+
 # Test Rules (all agents)
 
 1. **SKIP = FAIL**: テスト報告でSKIP数が1以上なら「テスト未完了」扱い。「完了」と報告してはならない。

@@ -430,6 +430,17 @@ tmux capture-pane -t multiagent:0.0 -p | tail -20
 ### shogun_state.yaml 常時更新義務
 コマンド処理開始時・完了時・ctx70%超過時に queue/shogun_state.yaml を更新せよ。
 
+### shogun_state.yaml フィールド定義
+```yaml
+# queue/shogun_state.yaml
+in_progress: ""          # 現在処理中のcmd_idまたはタスク名
+focus: ""                # 現在のフォーカス（例: "cmd_082設計レビュー"）
+last_update: ""          # ISO8601 タイムスタンプ
+ctx_percent: 0           # 最後に確認したctx%
+drafts_ref: []           # 進行中ドラフトへのパスリスト
+pending_cmds: []         # 未完了コマンドリスト（compact後復帰用）
+```
+
 ---
 
 ## Pre-CMD Rule Injection (MANDATORY)

@@ -7,15 +7,35 @@ set -euo pipefail
 
 TMUX_TARGET="${1:-multiagent:agents.0}"
 CHECK_INTERVAL=30  # 30秒ごとにペイン内容をチェック
+STATE_FILE="$(dirname "$0")/../queue/shogun_state.yaml"
 
-# ctx limit検出パターン
-CTX_LIMIT_PATTERNS=(
-  "Context limit reached"
-  "Approaching context limit"
-  "context window is"
-  "ctx:8[5-9]%"
-  "ctx:9[0-9]%"
-)
+# shogun_state.yaml から outing_mode を取得して閾値切替
+OUTING_MODE=$(grep 'outing_mode:' "$STATE_FILE" 2>/dev/null | awk '{print $2}' | tr -d '"' || echo "false")
+if [ "$OUTING_MODE" = "true" ]; then
+  CTX_THRESHOLD=70
+else
+  CTX_THRESHOLD=85
+fi
+
+# ctx limit検出パターン（閾値に応じて動的生成）
+if [ "$CTX_THRESHOLD" -le 70 ]; then
+  CTX_LIMIT_PATTERNS=(
+    "Context limit reached"
+    "Approaching context limit"
+    "context window is"
+    "ctx:7[0-9]%"
+    "ctx:8[0-9]%"
+    "ctx:9[0-9]%"
+  )
+else
+  CTX_LIMIT_PATTERNS=(
+    "Context limit reached"
+    "Approaching context limit"
+    "context window is"
+    "ctx:8[5-9]%"
+    "ctx:9[0-9]%"
+  )
+fi
 
 while true; do
   # ペイン内容取得（最後30行）

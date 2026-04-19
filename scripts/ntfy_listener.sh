@@ -159,10 +159,40 @@ while true; do
 
         echo "[$(date)] Received: $MSG" >&2
 
+        # 外出モード切替ハンドラ
+        STATE_FILE="$SCRIPT_DIR/queue/shogun_state.yaml"
+        if echo "$MSG" | grep -q "外出モード on"; then
+            sed -i "s/outing_mode: .*/outing_mode: true/" "$STATE_FILE"
+            bash "$SCRIPT_DIR/scripts/inbox_write.sh" shogun \
+                "外出モードONにしました。ctx閾値70%に切替済み。" \
+                outing_mode_changed ntfy_listener
+            echo "[$(date)] outing_mode=true に切替済み" >&2
+        elif echo "$MSG" | grep -q "外出モード off"; then
+            sed -i "s/outing_mode: .*/outing_mode: false/" "$STATE_FILE"
+            bash "$SCRIPT_DIR/scripts/inbox_write.sh" shogun \
+                "外出モードOFFにしました。ctx閾値85%（通常）に戻しました。" \
+                outing_mode_changed ntfy_listener
+            echo "[$(date)] outing_mode=false に切替済み" >&2
+        fi
+
         # Append to inbox YAML (flock + atomic write; multiline-safe)
         if ! append_ntfy_inbox "$MSG_ID" "$TIMESTAMP" "$MSG"; then
             echo "[$(date)] [ntfy_listener] WARNING: failed to append ntfy_inbox entry" >&2
             continue
+        fi
+
+        # yes/no返信パーサ（振り返り候補反映）
+        # 例: "yes 1,2,4" / "yes all" / "no abc12345"
+        if echo "$MSG" | grep -qiE "^yes "; then
+            TARGETS=$(echo "$MSG" | sed 's/^yes //i')
+            echo "[$(date)] yes返信検出: targets=$TARGETS" >&2
+            "$SCRIPT_DIR/.venv/bin/python3" \
+                "$SCRIPT_DIR/scripts/reflection/apply_yes_no.py" yes "$TARGETS" >&2 || true
+        elif echo "$MSG" | grep -qiE "^no "; then
+            TARGETS=$(echo "$MSG" | sed 's/^no //i')
+            echo "[$(date)] no返信検出: targets=$TARGETS" >&2
+            "$SCRIPT_DIR/.venv/bin/python3" \
+                "$SCRIPT_DIR/scripts/reflection/apply_yes_no.py" no "$TARGETS" >&2 || true
         fi
 
         # Auto-reply removed — shogun replies directly after processing.

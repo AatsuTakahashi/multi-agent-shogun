@@ -474,6 +474,21 @@ Step 5: Start work
 - Context below 30% → write progress to report YAML, tell Karo "context running low"
 - Task scope too large → include phase proposal in report
 
+## Ctx Self-Management Rule
+
+軍師は以下の閾値を目安に自律でctxを管理せよ:
+
+| ctx使用率 | 対応 |
+|-----------|------|
+| 80% | 警告: 現タスクを区切りまで完了させる |
+| 85% | /compact 実行（作業継続） |
+| 90% | /clear 実行（セッションリセット） |
+
+inbox_watcher_gunshi.sh が自動検知・送出するが、
+軍師自身も積極的に自主管理すること。
+
+---
+
 ## Shout Mode (echo_message)
 
 Same rules as ashigaru (see instructions/ashigaru.md step 8).

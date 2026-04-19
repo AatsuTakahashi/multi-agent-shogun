@@ -159,6 +159,22 @@ while true; do
 
         echo "[$(date)] Received: $MSG" >&2
 
+        # 外出モード切替ハンドラ
+        STATE_FILE="$SCRIPT_DIR/queue/shogun_state.yaml"
+        if echo "$MSG" | grep -q "外出モード on"; then
+            sed -i "s/outing_mode: .*/outing_mode: true/" "$STATE_FILE"
+            bash "$SCRIPT_DIR/scripts/inbox_write.sh" shogun \
+                "外出モードONにしました。ctx閾値70%に切替済み。" \
+                outing_mode_changed ntfy_listener
+            echo "[$(date)] outing_mode=true に切替済み" >&2
+        elif echo "$MSG" | grep -q "外出モード off"; then
+            sed -i "s/outing_mode: .*/outing_mode: false/" "$STATE_FILE"
+            bash "$SCRIPT_DIR/scripts/inbox_write.sh" shogun \
+                "外出モードOFFにしました。ctx閾値85%（通常）に戻しました。" \
+                outing_mode_changed ntfy_listener
+            echo "[$(date)] outing_mode=false に切替済み" >&2
+        fi
+
         # Append to inbox YAML (flock + atomic write; multiline-safe)
         if ! append_ntfy_inbox "$MSG_ID" "$TIMESTAMP" "$MSG"; then
             echo "[$(date)] [ntfy_listener] WARNING: failed to append ntfy_inbox entry" >&2

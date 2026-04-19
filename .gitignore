@@ -103,6 +103,8 @@
 !scripts/jarvis_memory.sh
 !scripts/jarvis_memory_read.sh
 !scripts/jarvis_memory_backup.sh
+!scripts/reflection/
+!scripts/reflection/apply_yes_no.py
 
 
 # SayTask (sample template only, not actual data)

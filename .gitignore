@@ -87,6 +87,7 @@
 !scripts/inbox_write.sh
 !scripts/inbox_watcher.sh
 !scripts/inbox_watcher_shogun.sh
+!scripts/inbox_watcher_gunshi.sh
 !scripts/watcher_supervisor.sh
 !scripts/ntfy.sh
 !scripts/ntfy_listener.sh

@@ -427,6 +427,36 @@ tmux capture-pane -t multiagent:0.0 -p | tail -20
 
 ---
 
+## Ctx Self-Management Rule（将軍）
+
+### ctx閾値と対応アクション
+| ctx% | アクション |
+|------|-----------|
+| 80% 到達 | queue/shogun_state.yaml を更新 + 殿にntfy通知「compact可能か確認」 |
+| 85% 到達 | /compact を自己実行（作業内容をdraftsに書出し後） |
+| 90% 到達 | /clear を実行（直前にshogun_state + drafts書込を保証） |
+
+### 長作業時の必須手順
+- 記事執筆・設計分析等の長作業開始時に queue/shogun_state.yaml の in_progress/focus を更新
+- 章・節の区切りごとに queue/drafts/YYYYMMDD_{topic}.md へ逐次書き出し
+- compact/clear後はShogun Session Start手順でshogun_state.yamlとdrafts/を読んで作業継続
+
+### shogun_state.yaml 常時更新義務
+コマンド処理開始時・完了時・ctx70%超過時に queue/shogun_state.yaml を更新せよ。
+
+### shogun_state.yaml フィールド定義
+```yaml
+# queue/shogun_state.yaml
+in_progress: ""          # 現在処理中のcmd_idまたはタスク名
+focus: ""                # 現在のフォーカス（例: "cmd_082設計レビュー"）
+last_update: ""          # ISO8601 タイムスタンプ
+ctx_percent: 0           # 最後に確認したctx%
+drafts_ref: []           # 進行中ドラフトへのパスリスト
+pending_cmds: []         # 未完了コマンドリスト（compact後復帰用）
+```
+
+---
+
 ## Pre-CMD Rule Injection (MANDATORY)
 
 cmd発令前に、JARVIS Supabaseからcmd内容に関連するルールを動的に取得し、指示文に反映する。

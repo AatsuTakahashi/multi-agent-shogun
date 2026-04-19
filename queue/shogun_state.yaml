@@ -1,0 +1,7 @@
+# 将軍の現在状態（Session Start時に読み込み、ctx変化時に更新）
+in_progress: ""
+focus: "idle"
+last_update: "2026-04-19T00:00:00"
+ctx_percent: 0
+drafts_ref: []
+pending_cmds: []

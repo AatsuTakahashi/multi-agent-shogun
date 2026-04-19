@@ -283,6 +283,14 @@ Act without waiting for Karo's instruction:
 - Context below 30% → write progress to report YAML, tell Karo "context running low"
 - Task larger than expected → include split proposal in report
 
+## Commit Rules
+
+### ⚠️ 1コミット=1論理変更（絶対ルール）
+- task YAMLの `commit_list:` に従って実装すること
+- 「+」「・」で複数変更を1コミットに束ねることは厳禁
+- 計画外コミットが必要になったら、作業を止めて家老に相談する
+- 「どうせ小さいから」は理由にならない。判断権は家老にある
+
 ## Shout Mode (echo_message)
 
 After task completion, check whether to echo a battle cry:

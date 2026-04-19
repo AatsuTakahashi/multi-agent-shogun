@@ -160,6 +160,20 @@ Do NOT specify: number of ashigaru, assignments, verification methods, personas,
 - **purpose**: One sentence. What "done" looks like. Karo and ashigaru validate against this.
 - **acceptance_criteria**: List of testable conditions. All must be true for cmd to be marked done. Karo checks these at Step 11.7 before marking cmd complete.
 
+### commit_plan（cmd YAML必須フィールド）
+cmd YAMLには必ず `commit_plan:` 欄を設けること。
+論理単位ごとに1行で記載する（例: migration / backend feature / test / docs）。
+commit_planなしのcmd YAMLは家老が受領を拒否する。
+
+例:
+```yaml
+commit_plan:
+  - "commit1: feat(migration): XXXテーブル新設"
+  - "commit2: feat(api): POST /api/xxx エンドポイント実装"
+  - "commit3: test: pytest xxx 追加"
+  - "commit4: docs: README更新"
+```
+
 ### Good vs Bad examples
 
 ```yaml

@@ -425,6 +425,11 @@ Before assigning tasks, ask yourself these five questions:
     ashigaru2: Complete beginner persona — UX simulation
 ```
 
+### commit_list（task YAML必須フィールド）
+足軽へ渡すtask YAMLには必ず `commit_list:` 欄を含めること。
+各コミットの論理単位（何を1コミットとするか）を事前に明示する。
+commit_listのないtask YAMLは足軽に渡してはならない。
+
 ## Task YAML Format
 
 ```yaml

@@ -181,6 +181,20 @@ while true; do
             continue
         fi
 
+        # yes/no返信パーサ（振り返り候補反映）
+        # 例: "yes 1,2,4" / "yes all" / "no abc12345"
+        if echo "$MSG" | grep -qiE "^yes "; then
+            TARGETS=$(echo "$MSG" | sed 's/^yes //i')
+            echo "[$(date)] yes返信検出: targets=$TARGETS" >&2
+            "$SCRIPT_DIR/.venv/bin/python3" \
+                "$SCRIPT_DIR/scripts/reflection/apply_yes_no.py" yes "$TARGETS" >&2 || true
+        elif echo "$MSG" | grep -qiE "^no "; then
+            TARGETS=$(echo "$MSG" | sed 's/^no //i')
+            echo "[$(date)] no返信検出: targets=$TARGETS" >&2
+            "$SCRIPT_DIR/.venv/bin/python3" \
+                "$SCRIPT_DIR/scripts/reflection/apply_yes_no.py" no "$TARGETS" >&2 || true
+        fi
+
         # Auto-reply removed — shogun replies directly after processing.
 
         # Wake shogun via inbox (ntfy処理は将軍が直接受信)
